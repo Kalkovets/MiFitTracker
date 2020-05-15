@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MiFitTracker</string>
+    <string name="server_client_id"> 941032150423-fo05lg3ealj30ln0sm26lkloovb5v1kh.apps.googleusercontent.com </string>
 </resources>
