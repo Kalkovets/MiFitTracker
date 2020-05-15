@@ -26,6 +26,8 @@ public class Registration extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_registration);
+
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -39,8 +41,6 @@ public class Registration extends AppCompatActivity {
             }
         });
 
-        setContentView(R.layout.activity_registration);
-
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
 
@@ -52,7 +52,7 @@ public class Registration extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account){
         if(account!=null){
-            Toast.makeText(this,"Ви успішно авторизувались",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Добро пожаловать, "+account.getDisplayName(),Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -66,8 +66,9 @@ public class Registration extends AppCompatActivity {
         super.onStart();
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        Intent intent = new Intent(Registration.this, MainActivity.class);
-        startActivity(intent);
+        updateUI(account);
+        //Intent intent = new Intent(Registration.this, MainActivity.class);
+        //startActivity(intent);
     }
 
     private void signIn() {
@@ -91,10 +92,10 @@ public class Registration extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
+            updateUI(account);
             // Signed in successfully, show authenticated UI.
-            Intent intent = new Intent(Registration.this, MainActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(Registration.this, MainActivity.class);
+            //startActivity(intent);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
