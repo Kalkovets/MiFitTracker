@@ -3,9 +3,12 @@ package com.example.mifittracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -18,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 
 public class Registration extends AppCompatActivity {
 
+    TextView text2;
     SignInButton signInButton;
     GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 0;
@@ -27,7 +31,9 @@ public class Registration extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_registration);
-
+        text2 = findViewById(R.id.textView2);
+        String t2 = "в <b>MiFitTracker</b>";
+        text2.setText(Html.fromHtml(t2));
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +63,7 @@ public class Registration extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }else{
-            Toast.makeText(this,"Ви не авторизовані", Toast.LENGTH_LONG).show();
+
         }
     }
 
