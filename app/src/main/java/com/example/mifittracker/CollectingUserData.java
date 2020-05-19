@@ -6,6 +6,7 @@ import androidx.fragment.app.DialogFragment;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
         dateBirthday.setRawInputType(0x00000000);
 
         ImageView dateButton = (ImageView)findViewById(R.id.dateButton);
+
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -44,3 +46,9 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
         dateBirthday.setText(dateBirthdayString);
     }
 }
+
+/* Чтобы узнать, какой пол выбрали при нажатии кнопки "Далее"
+Spinner spinner = findViewById(R.id.spinner);
+String selected = spinner.getSelectedItem().toString();
+Toast.makeText(getApplicationContext(), selected, Toast.LENGTH_SHORT).show();
+*/
