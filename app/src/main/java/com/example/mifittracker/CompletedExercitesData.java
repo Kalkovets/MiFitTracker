@@ -33,7 +33,9 @@ import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static java.text.DateFormat.getDateInstance;
@@ -43,16 +45,19 @@ public class CompletedExercitesData extends AppCompatActivity {
 
     FitnessOptions fitnessOptions;
     private static int ACTIVITY_RECOGNITION_CODE = 1;
+    private static DataType DATA_TYPE = DataType.TYPE_HEART_RATE_BPM;
+    private static DataType AGGREGATE_DATA_TYPE = DataType.AGGREGATE_HEART_RATE_SUMMARY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_completed_exercites_data);
         TextView textView;
 
         fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DATA_TYPE, FitnessOptions.ACCESS_READ)
+                .addDataType(AGGREGATE_DATA_TYPE, FitnessOptions.ACCESS_READ)
 //                .addDataType(DataType.TYPE_HEART_POINTS, FitnessOptions.ACCESS_READ)
 //                .addDataType(DataType.AGGREGATE_HEART_RATE_SUMMARY, FitnessOptions.ACCESS_READ)
                 .build();
@@ -103,7 +108,7 @@ public class CompletedExercitesData extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.YEAR, -1);
+        cal.add(Calendar.DAY_OF_WEEK, -1);
         long startTime = cal.getTimeInMillis();
 
         java.text.DateFormat dateFormat = getDateInstance();
@@ -111,9 +116,9 @@ public class CompletedExercitesData extends AppCompatActivity {
         Log.i("TIME", "Range End: " + dateFormat.format(endTime));
 
         DataReadRequest readRequest = new DataReadRequest.Builder()
-                .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+                .aggregate(DATA_TYPE, AGGREGATE_DATA_TYPE)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                .bucketByTime(1, TimeUnit.DAYS)
+                .bucketByTime(1, TimeUnit.HOURS)
                 .build();
 
         GoogleSignInAccount account = GoogleSignIn
@@ -124,13 +129,17 @@ public class CompletedExercitesData extends AppCompatActivity {
                 .addOnSuccessListener(response -> {
                     // Use response data here
 
+                    Log.d("STATUS", response.toString());
+                    for (DataSet set : response.getDataSets()) {
+                        Log.d("data set: ", set.toString());
+                    }
+
                     for (Bucket b : response.getBuckets()) {
                         if (b != null) {
-                            DataSet s = b.getDataSet(DataType.TYPE_STEP_COUNT_DELTA);
+                            DataSet s = b.getDataSet(DATA_TYPE);
                             if (s != null) {
                                 dumpDataSet(s);
                             }
-
                         }
                     }
 
