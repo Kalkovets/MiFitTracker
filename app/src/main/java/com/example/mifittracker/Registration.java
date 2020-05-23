@@ -59,6 +59,7 @@ public class Registration extends AppCompatActivity {
     private void updateUI(GoogleSignInAccount account){
         if(account!=null){
             Toast.makeText(this,"Добро пожаловать, "+account.getDisplayName(),Toast.LENGTH_LONG).show();
+            System.out.println("ID: "+account.getId()+" IDTOKEN "+account.getIdToken());
             Intent intent = new Intent(this, CollectingUserData.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

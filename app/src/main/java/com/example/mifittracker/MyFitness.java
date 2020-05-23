@@ -3,6 +3,7 @@ package com.example.mifittracker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -26,9 +27,25 @@ public class MyFitness extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_fitness);
 
+//        System.out.println("name: " + getLocalBluetoothName());
+
         System.out.println("before something");
         do_something();
         System.out.println("after something");
+    }
+
+    BluetoothAdapter mBluetoothAdapter;
+
+    public String getLocalBluetoothName(){
+        if(mBluetoothAdapter == null){
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        }
+        String name = mBluetoothAdapter.getName();
+        if(name == null){
+            System.out.println("Name is null!");
+            name = mBluetoothAdapter.getAddress();
+        }
+        return name;
     }
 
     private void do_something() {
@@ -49,8 +66,7 @@ public class MyFitness extends AppCompatActivity {
  //       hrBRM.setText();
 
         FitnessOptions fitnessOptions = FitnessOptions.builder()
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_STEP_COUNT_CUMULATIVE, FitnessOptions.ACCESS_READ)
                 .build();
 
         GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
