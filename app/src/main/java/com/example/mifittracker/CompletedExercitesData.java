@@ -53,21 +53,18 @@ public class CompletedExercitesData extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_completed_exercites_data);
-        TextView textView;
 
         fitnessOptions = FitnessOptions.builder()
                 .addDataType(DATA_TYPE, FitnessOptions.ACCESS_READ)
                 .addDataType(AGGREGATE_DATA_TYPE, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.TYPE_HEART_POINTS, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.AGGREGATE_HEART_RATE_SUMMARY, FitnessOptions.ACCESS_READ)
                 .build();
+
         authGoogleFitAPI();
         authGoogleFitAPI2();
         accessGoogleFit();
     }
 
     public void authGoogleFitAPI(){
-
         GoogleSignInAccount account = GoogleSignIn.getAccountForExtension(this, fitnessOptions);
 
         if (!GoogleSignIn.hasPermissions(account, fitnessOptions)) {
@@ -76,17 +73,13 @@ public class CompletedExercitesData extends AppCompatActivity {
                     1, // e.g. 1
                     account,
                     fitnessOptions);
-        } else {
-            accessGoogleFit();
         }
     }
 
-
-
     public void authGoogleFitAPI2(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
+                != PackageManager.PERMISSION_GRANTED)
+        {
             String[] permissions = {Manifest.permission.ACTIVITY_RECOGNITION};
             ActivityCompat.requestPermissions(this,
                     permissions,
@@ -94,22 +87,12 @@ public class CompletedExercitesData extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == 1) {
-                accessGoogleFit();
-            }
-        }
-    }
-
     private void accessGoogleFit() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        long endTime = cal.getTimeInMillis();
-        cal.add(Calendar.DAY_OF_WEEK, -1);
-        long startTime = cal.getTimeInMillis();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        long endTime = calendar.getTimeInMillis();
+        calendar.add(Calendar.DAY_OF_WEEK, -1);
+        long startTime = calendar.getTimeInMillis();
 
         java.text.DateFormat dateFormat = getDateInstance();
         Log.i("TIME", "Range Start: " + dateFormat.format(startTime));
@@ -127,44 +110,40 @@ public class CompletedExercitesData extends AppCompatActivity {
         Fitness.getHistoryClient(this, account)
                 .readData(readRequest)
                 .addOnSuccessListener(response -> {
-                    // Use response data here
 
-                    Log.d("STATUS", response.toString());
-                    for (DataSet set : response.getDataSets()) {
-                        Log.d("data set: ", set.toString());
-                    }
+                    Log.d("Response status", response.getStatus().toString());
 
-                    for (Bucket b : response.getBuckets()) {
-                        if (b != null) {
-                            DataSet s = b.getDataSet(DATA_TYPE);
-                            if (s != null) {
-                                dumpDataSet(s);
+                    for (Bucket currentBucket : response.getBuckets()) {
+                        if (currentBucket != null) {
+                            DataSet dataSet = currentBucket.getDataSet(AGGREGATE_DATA_TYPE);
+                            if (dataSet != null) {
+                                dumpDataSet(dataSet);
+                            } else {
+                                Log.w("Unexpected", "Got null DataSet");
                             }
+                        } else {
+                            Log.w("Unexpected", "Got null Bucket");
                         }
                     }
 
-                    Log.d("GETHISTORYCLIENT", "OnSuccess()");
-                    Log.d("STATUS", response.getStatus().toString());
                 })
                 .addOnFailureListener(e -> {
-                    Log.d("GETHISTORYCLIENT", "OnFailure()", e);
+                    Log.e("Request", "Unexpected error while the request was processing", e);
                 });
-//        Task<DataReadResponse> response = Fitness.getHistoryClient(this, GoogleSignIn.getLastSignedInAccount(this).readData(readRequest);
-//        List<DataSet> dataSets = response.getResult().getDataSets();
+
     }
 
     private static void dumpDataSet(DataSet dataSet) {
-        Log.i("DUMPDATASET", "Data returned for Data type: " + dataSet.getDataType().getName());
+        Log.i("DUMP_DATA_SET", "Data returned for Data type: " + dataSet.getDataType().getName());
         DateFormat dateFormat = getTimeInstance();
 
         for (DataPoint dp : dataSet.getDataPoints()) {
-
-            Log.i("DUMPDATASET", "Data point:");
-            Log.i("DUMPDATASET", "\tType: " + dp.getDataType().getName());
-            Log.i("DUMPDATASET", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-            Log.i("DUMPDATASET", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+            Log.i("DUMP_DATA_SET", "Data point:");
+            Log.i("DUMP_DATA_SET", "\tType:  " + dp.getDataType().getName());
+            Log.i("DUMP_DATA_SET", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+            Log.i("DUMP_DATA_SET", "\tEnd:   " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
             for (Field field : dp.getDataType().getFields()) {
-                Log.i("DUMPDATASET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
+                Log.i("DUMP_DATA_SET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
             }
         }
     }
