@@ -32,7 +32,7 @@ public class Registration extends AppCompatActivity {
 
         setContentView(R.layout.activity_registration);
         text2 = findViewById(R.id.textView2);
-        String t2 = "в <b>MiFitTracker</b>";
+        String t2 = "в <b>MyFitTracker</b>";
         text2.setText(Html.fromHtml(t2));
         signInButton = findViewById(R.id.sign_in_button);
         signInButton.setOnClickListener(new View.OnClickListener() {
