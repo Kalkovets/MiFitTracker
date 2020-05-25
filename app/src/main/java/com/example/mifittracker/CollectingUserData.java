@@ -1,18 +1,33 @@
 package com.example.mifittracker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CollectingUserData extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
@@ -21,16 +36,53 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collecting_user_data);
 
+        String ID_User = getIntent().getStringExtra("ID_User");
+        FirebaseApp.initializeApp(this);
         EditText dateBirthday = (EditText)findViewById(R.id.dateBirthday);
         dateBirthday.setRawInputType(0x00000000);
+        EditText height = (EditText)findViewById(R.id.Height);
+        EditText weight = (EditText)findViewById(R.id.Weight);
+        Spinner sex = (Spinner)findViewById(R.id.Sex);
+        Spinner purpose_training = (Spinner)findViewById(R.id.Purpose_Training);
+        Spinner place_training = (Spinner)findViewById(R.id.Place_Training);
+
+        Button nextButton = (Button)findViewById(R.id.button);
 
         ImageView dateButton = (ImageView)findViewById(R.id.dateButton);
+
+        FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
 
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment datePicker = new DatePickerFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
+            }
+        });
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Map<String, Object> user_data = new HashMap<>();
+                user_data.put("Height", Integer.parseInt(height.getText().toString()));
+                user_data.put("Weight", Integer.parseInt(weight.getText().toString()));
+                user_data.put("Born_Date", dateBirthday.getText().toString());
+                user_data.put("Sex", sex.getSelectedItem().toString());
+                user_data.put("Purpose_Training", purpose_training.getSelectedItem().toString());
+                user_data.put("Place_Training", place_training.getSelectedItem().toString());
+
+                databaseFirebase.collection("User_Data")
+                        .document(ID_User)
+                        .set(user_data)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Intent intent = new Intent(CollectingUserData.this, CompletedExercitesData.class);
+                                startActivity(intent);
+                            }
+                        });
             }
         });
     }
