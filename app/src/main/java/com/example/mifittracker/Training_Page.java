@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -62,6 +64,50 @@ public class Training_Page extends AppCompatActivity {
                     }
                     MyAdapter adapter = new MyAdapter(getApplicationContext(), list, list2);
                     listview.setAdapter(adapter);
+
+                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                            String exersice_name = list.get(position); // Назва вправи
+                            System.out.println("FUCKING SLAVES "+position);
+
+                            DocumentReference docRef = databaseFirebase.collection("Exercises").document("Exercise"+String.valueOf(position+1));
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if (documentSnapshot.exists()) {
+                                            String description_exercise = documentSnapshot.getString("Description"); // Опис вправи
+                                            System.out.println("FUCKING DESCRIPTION " + description_exercise);
+                                            Log.d("DESCRIPTION", "DocumentSnapshot data: " + documentSnapshot.getData());
+
+//                                            Intent intenttodialogforexercises = new Intent(getApplicationContext(), CustomDialogForExercises.class);
+//                                            intenttodialogforexercises.putExtra("Name_Exercise", exersice_name);
+//                                            intenttodialogforexercises.putExtra("Description_Exercise", description_exercise);
+
+                                            final Dialog dialog = new Dialog(getApplicationContext());
+                                            dialog.setContentView(R.layout.activity_custom_dialog_for_exercises);
+
+//                                            TextView textView_name_exercise = (TextView)dialog.findViewById(R.id.name_exercises_dialog_for_exercises);
+//                                            System.out.println("FUCKING SLAVES 2.0 "+exersice_name);
+//                                            textView_name_exercise.setText(exersice_name);
+//                                            TextView textView_description_exercise = (TextView)dialog.findViewById(R.id.description_exercises_dialog_for_exercises);
+//                                            textView_description_exercise.setText(description_exercise);
+
+                                            dialog.show();
+
+                                        } else {
+                                            Log.d("DESCRIPTION", "No such document");
+                                        }
+                                    } else {
+                                        Log.d("DESCRIPTION", "get failed with ", task.getException());
+                                    }
+                                }
+                            });
+
+                        }
+                    });
 //                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //                        @Override
 //                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
