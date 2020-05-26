@@ -50,17 +50,10 @@ public class Training_Page extends AppCompatActivity {
                     List<String> list = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         list.add(document.get("Name_Exercise").toString());
-                        //list.add(document.get("Count").toString());
-//                        System.out.println("YCPEWHO! " + document.get("Name_Exercise").toString());
-//                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, list);
-//                        listview.setAdapter(arrayAdapter);
                     }
                     List<String> list2 = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         list2.add(document.get("Count").toString());
-                        //list.add(document.get("Count").toString());
-//                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, list);
-//                        listview.setAdapter(arrayAdapter);
                     }
                     MyAdapter adapter = new MyAdapter(getApplicationContext(), list, list2);
                     listview.setAdapter(adapter);
@@ -82,28 +75,8 @@ public class Training_Page extends AppCompatActivity {
                                             System.out.println("FUCKING DESCRIPTION " + description_exercise);
                                             Log.d("DESCRIPTION", "DocumentSnapshot data: " + documentSnapshot.getData());
 
-//                                            Intent intenttodialogforexercises = new Intent(getApplicationContext(), CustomDialogForExercises.class);
-//                                            intenttodialogforexercises.putExtra("Name_Exercise", exersice_name);
-//                                            intenttodialogforexercises.putExtra("Description_Exercise", description_exercise);
-
-
                                             CustomDialogForExercises dialog = new CustomDialogForExercises(exercise_name, description_exercise);
-//                                            TextView textView_name_exercise = (TextView)findViewById(R.id.name_exercises_dialog_for_exercises);
-//                                            System.out.println("FUCKING SLAVES 2.0 "+exersice_name);
-//                                            textView_name_exercise.setText(exersice_name);
-//                                            TextView textView_description_exercise = (TextView)findViewById(R.id.description_exercises_dialog_for_exercises);
-//                                            textView_description_exercise.setText(description_exercise);
                                             dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
-//                                            final Dialog dialog = new Dialog(getApplicationContext());
-//                                            dialog.setContentView(R.layout.activity_custom_dialog_for_exercises);
-//
-////                                            TextView textView_name_exercise = (TextView)dialog.findViewById(R.id.name_exercises_dialog_for_exercises);
-////                                            System.out.println("FUCKING SLAVES 2.0 "+exersice_name);
-////                                            textView_name_exercise.setText(exersice_name);
-////                                            TextView textView_description_exercise = (TextView)dialog.findViewById(R.id.description_exercises_dialog_for_exercises);
-////                                            textView_description_exercise.setText(description_exercise);
-//
-//                                            dialog.show();
 
                                         } else {
                                             Log.d("DESCRIPTION", "No such document");

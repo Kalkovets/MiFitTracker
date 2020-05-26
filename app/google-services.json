@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "941032150423",
+    "firebase_url": "https://mifittrackerauth.firebaseio.com",
+    "project_id": "mifittrackerauth",
+    "storage_bucket": "mifittrackerauth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941032150423:android:3e8d19f84f2951917020d2",
+        "android_client_info": {
+          "package_name": "com.example.mifittracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "941032150423-sckb9tmadhskvqutnbdb78hf5p5h32o7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mifittracker",
+            "certificate_hash": "bef76d2b1258763861598763cc86ce6eb07beb1d"
+          }
+        },
+        {
+          "client_id": "941032150423-a561kjcot0o90q5558rgt1o7rlcgctu0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFMl0t1g5TX_UOKmKZafavbx2hFtOIvuk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "941032150423-a561kjcot0o90q5558rgt1o7rlcgctu0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
