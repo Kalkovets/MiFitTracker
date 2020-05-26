@@ -52,6 +52,36 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
 
         FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
 
+        //Написано на ленивых и нада удалить
+
+//        Map<String, Object> exercises = new HashMap<>();
+//        exercises.put("Classification", "");
+//        exercises.put("Count", "");
+//        exercises.put("Description", "");
+//        exercises.put("For_Max_Age", "");
+//        exercises.put("For_Max_Height", "");
+//        exercises.put("For_Max_Weight", "");
+//        exercises.put("For_Min_Age", "");
+//        exercises.put("For_Min_Height", "");
+//        exercises.put("For_Min_Weight", "");
+//        exercises.put("Name_Exercise", "");
+//        exercises.put("Place", "");
+//        exercises.put("Purpose", "");
+//        exercises.put("Sex", "");
+//        exercises.put("TimerOrApproah", "");
+//
+//        databaseFirebase.collection("Exercises")
+//                .document("Exercise8")
+//                .set(exercises)
+//                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        System.out.println("YCPEWHO!");
+//                    }
+//                });
+
+         //Конец кода для ленивых
+
         dateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
