@@ -2,6 +2,7 @@ package com.example.mifittracker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,8 +15,6 @@ public class Main_Menu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__menu);
-
-        Button closeAppButton = (Button)findViewById(R.id.button4);
 
         ImageView startTrainingButton = (ImageView)findViewById(R.id.imageView6);
         ImageView statTrainingButton = (ImageView)findViewById(R.id.imageView7);
@@ -35,13 +34,5 @@ public class Main_Menu extends AppCompatActivity {
                 startActivity(intentToStatTraining);
             }
         });
-
-        closeAppButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.exit(0);
-            }
-        });
-
     }
 }
