@@ -23,6 +23,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -38,6 +40,24 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
 
         String ID_User = getIntent().getStringExtra("ID_User");
         FirebaseApp.initializeApp(this);
+
+        FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
+        databaseFirebase.collection("cities")
+                .whereEqualTo("capital", true)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d("Checking data ", document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.d("Checking data ", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
         EditText dateBirthday = (EditText)findViewById(R.id.dateBirthday);
         dateBirthday.setRawInputType(0x00000000);
         EditText height = (EditText)findViewById(R.id.Height);
@@ -50,7 +70,7 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
 
         ImageView dateButton = (ImageView)findViewById(R.id.dateButton);
 
-        FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
+
 
         //Написано на ленивых и нада удалить
 

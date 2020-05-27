@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -60,6 +61,7 @@ public class CompletedExercitesData extends AppCompatActivity {
 
     ListView listView1;
     String TimeExercises;
+    public static double HeartRateBRM;
 
     FitnessOptions fitnessOptions;
     private static int ACTIVITY_RECOGNITION_CODE = 1;
@@ -71,6 +73,15 @@ public class CompletedExercitesData extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_completed_exercites_data);
+
+        Button mainMenuButton = (Button)findViewById(R.id.button3);
+        mainMenuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent backtoMainMenu = new Intent(getApplicationContext(), Main_Menu.class);
+                startActivity(backtoMainMenu);
+            }
+        });
 
         fitnessOptions = FitnessOptions.builder()
                 .addDataType(DATA_TYPE, FitnessOptions.ACCESS_READ)
@@ -100,6 +111,16 @@ public class CompletedExercitesData extends AppCompatActivity {
                         TimeExercises = document.get("TimeExercise").toString();
                         System.out.println(list3+" "+list4);
                     }
+                    List<Double> list5Start = new ArrayList<>();
+                    List<Double> list5End = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task1.getResult()) {
+                        list5Start.add(Double.parseDouble(document.get("StartTimeInMillis").toString()));
+                        listTimeExercises.add(document.get("TimeExercise").toString());
+                        list5End.add(Double.parseDouble(document.get("EndTimeInMillis").toString()));
+                        TimeExercises = document.get("TimeExercise").toString();
+
+                        System.out.println("LONG "+list5Start);
+                    }
                     CompletedExercitesData.MyAdapter1 adapter = new CompletedExercitesData.MyAdapter1(getApplicationContext(), list3, list4);
                     listView1.setAdapter(adapter);
 
@@ -108,7 +129,6 @@ public class CompletedExercitesData extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
                             String exercise_name = list3.get(position); // Назва вправи
-                            System.out.println("FUCKING SLAVES "+position);
 
                             databaseFirebase.collection("Completed_Exercises").whereEqualTo("TimeExercise", listTimeExercises.get(position))
                             .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -117,7 +137,19 @@ public class CompletedExercitesData extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
                                             Log.d("GETTIME", document.getId() + " => " + document.getData());
+
+                                            double startExercise = (list5Start.get(position));
+                                            long startExerciseLong = (long)(startExercise);
+
+                                            double endExercise = (list5End.get(position));
+                                            long endExerciseLong = (long)(endExercise);
+
+                                            System.out.println("FUCK CANT "+endExerciseLong);
+
                                             String pulse_bpm = "90 ударов/мин";
+
+                                            accessGoogleFit(startExerciseLong, endExerciseLong);
+
                                             CustomDialogForCompletedExercises dialog = new CustomDialogForCompletedExercises(exercise_name, pulse_bpm);
                                             dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
                                         }
@@ -142,7 +174,7 @@ public class CompletedExercitesData extends AppCompatActivity {
             }
         });
 
-        accessGoogleFit();
+
     }
 
     public void authGoogleFitAPI(){
@@ -168,12 +200,12 @@ public class CompletedExercitesData extends AppCompatActivity {
         }
     }
 
-    private void accessGoogleFit() {
+    private void accessGoogleFit(long _startTime, long _endTime) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        long endTime = calendar.getTimeInMillis();
-        calendar.add(Calendar.DAY_OF_WEEK, -1);
-        long startTime = calendar.getTimeInMillis();
+        long endTime = _endTime; //calendar.getTimeInMillis();
+        //calendar.add(Calendar.DAY_OF_WEEK, -1);
+        long startTime = _startTime; //calendar.getTimeInMillis();
 
         java.text.DateFormat dateFormat = getDateInstance();
         Log.i("TIME", "Range Start: " + dateFormat.format(startTime));
@@ -224,7 +256,11 @@ public class CompletedExercitesData extends AppCompatActivity {
             Log.i("DUMP_DATA_SET", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
             Log.i("DUMP_DATA_SET", "\tEnd:   " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
             for (Field field : dp.getDataType().getFields()) {
-                Log.i("DUMP_DATA_SET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
+            //    if (field.getName()=="average") {
+                    //this.HeartRateBRM = dp.getValue(field);
+                    Log.i("DUMP_DATA_SET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
+                    System.out.println("SUUUCK " + field.getName());
+             //   }
             }
         }
     }
