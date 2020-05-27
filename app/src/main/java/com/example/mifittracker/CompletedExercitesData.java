@@ -59,7 +59,7 @@ import static java.text.DateFormat.getTimeInstance;
 public class CompletedExercitesData extends AppCompatActivity {
 
     ListView listView1;
-
+    String TimeExercises;
 
     FitnessOptions fitnessOptions;
     private static int ACTIVITY_RECOGNITION_CODE = 1;
@@ -93,8 +93,11 @@ public class CompletedExercitesData extends AppCompatActivity {
                         list3.add(document.get("NameExercise").toString());
                     }
                     List<String> list4 = new ArrayList<>();
+                    List<String> listTimeExercises = new ArrayList<>();
                     for (QueryDocumentSnapshot document : task1.getResult()) {
                         list4.add(document.get("DateExercise").toString()+" "+document.get("TimeExercise").toString());
+                        listTimeExercises.add(document.get("TimeExercise").toString());
+                        TimeExercises = document.get("TimeExercise").toString();
                         System.out.println(list3+" "+list4);
                     }
                     CompletedExercitesData.MyAdapter1 adapter = new CompletedExercitesData.MyAdapter1(getApplicationContext(), list3, list4);
@@ -103,28 +106,23 @@ public class CompletedExercitesData extends AppCompatActivity {
                     listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+
                             String exercise_name = list3.get(position); // Назва вправи
                             System.out.println("FUCKING SLAVES "+position);
 
-                            DocumentReference docRef = databaseFirebase.collection("Exercises").document("Exercise"+String.valueOf(position+1));
-                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            databaseFirebase.collection("Completed_Exercises").whereEqualTo("TimeExercise", listTimeExercises.get(position))
+                            .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
-                                        DocumentSnapshot documentSnapshot = task.getResult();
-                                        if (documentSnapshot.exists()) {
-                                            String description_exercise = documentSnapshot.getString("Description"); // Опис вправи
-                                            System.out.println("FUCKING DESCRIPTION " + description_exercise);
-                                            Log.d("DESCRIPTION", "DocumentSnapshot data: " + documentSnapshot.getData());
-
-                                            CustomDialogForExercises dialog = new CustomDialogForExercises(exercise_name, description_exercise);
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Log.d("GETTIME", document.getId() + " => " + document.getData());
+                                            String pulse_bpm = "90 ударов/мин";
+                                            CustomDialogForCompletedExercises dialog = new CustomDialogForCompletedExercises(exercise_name, pulse_bpm);
                                             dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
-
-                                        } else {
-                                            Log.d("DESCRIPTION", "No such document");
                                         }
                                     } else {
-                                        Log.d("DESCRIPTION", "get failed with ", task.getException());
+                                        Log.d("GETTIME", "Error getting documents: ", task.getException());
                                     }
                                 }
                             });
