@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import java.util.List;
 public class Training_Page extends AppCompatActivity {
 
     ListView listview;
+    Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,15 @@ public class Training_Page extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         listview = (ListView) findViewById(R.id.listView);
+
+        button = (Button)findViewById(R.id.button2);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent perexodtoTracker = new Intent(getApplicationContext(), CompletedExercitesData.class);
+                startActivity(perexodtoTracker);
+            }
+        });
 
         FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
 

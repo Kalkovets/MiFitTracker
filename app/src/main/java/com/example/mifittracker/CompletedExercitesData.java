@@ -1,16 +1,24 @@
 package com.example.mifittracker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,12 +32,19 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResponse;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.reflect.Array;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,6 +57,9 @@ import static java.text.DateFormat.getDateInstance;
 import static java.text.DateFormat.getTimeInstance;
 
 public class CompletedExercitesData extends AppCompatActivity {
+
+    ListView listView1;
+
 
     FitnessOptions fitnessOptions;
     private static int ACTIVITY_RECOGNITION_CODE = 1;
@@ -61,6 +79,71 @@ public class CompletedExercitesData extends AppCompatActivity {
 
         authGoogleFitAPI();
         authGoogleFitAPI2();
+
+        listView1 = (ListView) findViewById(R.id.listView2);
+
+        FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
+
+        databaseFirebase.collection("Completed_Exercises").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task1) {
+                if (task1.isSuccessful()) {
+                    List<String> list3 = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task1.getResult()) {
+                        list3.add(document.get("NameExercise").toString());
+                    }
+                    List<String> list4 = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : task1.getResult()) {
+                        list4.add(document.get("DateExercise").toString()+" "+document.get("TimeExercise").toString());
+                        System.out.println(list3+" "+list4);
+                    }
+                    CompletedExercitesData.MyAdapter1 adapter = new CompletedExercitesData.MyAdapter1(getApplicationContext(), list3, list4);
+                    listView1.setAdapter(adapter);
+
+                    listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                            String exercise_name = list3.get(position); // Назва вправи
+                            System.out.println("FUCKING SLAVES "+position);
+
+                            DocumentReference docRef = databaseFirebase.collection("Exercises").document("Exercise"+String.valueOf(position+1));
+                            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if (documentSnapshot.exists()) {
+                                            String description_exercise = documentSnapshot.getString("Description"); // Опис вправи
+                                            System.out.println("FUCKING DESCRIPTION " + description_exercise);
+                                            Log.d("DESCRIPTION", "DocumentSnapshot data: " + documentSnapshot.getData());
+
+                                            CustomDialogForExercises dialog = new CustomDialogForExercises(exercise_name, description_exercise);
+                                            dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
+
+                                        } else {
+                                            Log.d("DESCRIPTION", "No such document");
+                                        }
+                                    } else {
+                                        Log.d("DESCRIPTION", "get failed with ", task.getException());
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+//                    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//                        }
+//                    });
+                    Log.d("EXERCISES", list3.toString());
+                } else {
+                    Log.d("EXERCISES", "Error getting documents: ", task1.getException());
+                }
+            }
+        });
+
         accessGoogleFit();
     }
 
@@ -145,6 +228,34 @@ public class CompletedExercitesData extends AppCompatActivity {
             for (Field field : dp.getDataType().getFields()) {
                 Log.i("DUMP_DATA_SET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
             }
+        }
+    }
+
+    class MyAdapter1 extends ArrayAdapter<String> {
+        Context context;
+        List<String> rTitle;
+        List<String> rDescription;
+
+        MyAdapter1 (Context c, List<String> title, List<String> description){
+            super(c, R.layout.row, R.id.textView111, title);
+            this.context = c;
+            this.rTitle = title;
+            this.rDescription = description;
+
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater layoutInflater = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = layoutInflater.inflate(R.layout.row, parent, false);
+            TextView nameTraining = row.findViewById(R.id.textView111);
+            TextView countTraining = row.findViewById(R.id.textView222);
+
+            nameTraining.setText(rTitle.get(position).toString());
+            countTraining.setText(" "+rDescription.get(position).toString());
+
+            return row;
         }
     }
 }
