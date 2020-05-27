@@ -146,12 +146,7 @@ public class CompletedExercitesData extends AppCompatActivity {
 
                                             System.out.println("START TIME "+startExerciseLong+" END TIME "+endExerciseLong);
 
-                                            String pulse_bpm = "90 ударов/мин";
-
-                                            accessGoogleFit(startExerciseLong, endExerciseLong);
-
-                                            CustomDialogForCompletedExercises dialog = new CustomDialogForCompletedExercises(exercise_name, pulse_bpm);
-                                            dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
+                                            accessGoogleFit(exercise_name, startExerciseLong, endExerciseLong);
                                         }
                                     } else {
                                         Log.d("GETTIME", "Error getting documents: ", task.getException());
@@ -200,12 +195,20 @@ public class CompletedExercitesData extends AppCompatActivity {
         }
     }
 
-    private void accessGoogleFit(long _startTime, long _endTime) {
+    private void accessGoogleFit(String exercise_name, long _startTime, long _endTime) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
+
+//        long m_endTime = calendar.getTimeInMillis();
+//        calendar.add(Calendar.DAY_OF_WEEK, -1);
+//        long m_startTime = calendar.getTimeInMillis();
+
         long endTime = _endTime; //calendar.getTimeInMillis();
-        //calendar.add(Calendar.DAY_OF_WEEK, -1);
+
         long startTime = _startTime; //calendar.getTimeInMillis();
+
+   //     System.out.println("origin  " + m_startTime + " " + m_endTime);
+        System.out.println("another " + _startTime + " " + _endTime);
 
         java.text.DateFormat dateFormat = getDateInstance();
         Log.i("TIME", "Range Start: " + dateFormat.format(startTime));
@@ -224,13 +227,15 @@ public class CompletedExercitesData extends AppCompatActivity {
                 .readData(readRequest)
                 .addOnSuccessListener(response -> {
 
+                    long average_bpm = 0;
+
                     Log.d("Response status", response.getStatus().toString());
 
                     for (Bucket currentBucket : response.getBuckets()) {
                         if (currentBucket != null) {
                             DataSet dataSet = currentBucket.getDataSet(AGGREGATE_DATA_TYPE);
                             if (dataSet != null) {
-                                dumpDataSet(dataSet);
+                                average_bpm = dumpDataSet(dataSet);
                             } else {
                                 Log.w("Unexpected", "Got null DataSet");
                             }
@@ -239,6 +244,9 @@ public class CompletedExercitesData extends AppCompatActivity {
                         }
                     }
 
+                    CustomDialogForCompletedExercises dialog = new CustomDialogForCompletedExercises(exercise_name, String.valueOf(average_bpm));
+                    dialog.show(getSupportFragmentManager(), "SHOW DIALOG FOR EXERCISES");
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Request", "Unexpected error while the request was processing", e);
@@ -246,9 +254,12 @@ public class CompletedExercitesData extends AppCompatActivity {
 
     }
 
-    private static void dumpDataSet(DataSet dataSet) {
+    private static long dumpDataSet(DataSet dataSet) {
         Log.i("DUMP_DATA_SET", "Data returned for Data type: " + dataSet.getDataType().getName());
         DateFormat dateFormat = getTimeInstance();
+
+        double average = 0.0;
+        long counter = 0;
 
         for (DataPoint dp : dataSet.getDataPoints()) {
             Log.i("DUMP_DATA_SET", "Data point:");
@@ -256,13 +267,18 @@ public class CompletedExercitesData extends AppCompatActivity {
             Log.i("DUMP_DATA_SET", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
             Log.i("DUMP_DATA_SET", "\tEnd:   " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
             for (Field field : dp.getDataType().getFields()) {
-            //    if (field.getName()=="average") {
+                if (field.getName().equals("average")) {
                     //this.HeartRateBRM = dp.getValue(field);
                     Log.i("DUMP_DATA_SET", "\tField: " + field.getName() + " Value: " + dp.getValue(field));
+                    average += dp.getValue(field).asFloat();
+                    counter++;
                     System.out.println("SUUUCK " + field.getName());
-             //   }
+                }
             }
         }
+
+
+        return (long)(average / counter);
     }
 
     class MyAdapter1 extends ArrayAdapter<String> {

@@ -37,7 +37,7 @@ public class CustomDialogForCompletedExercises extends DialogFragment {
         builder1.setView(myView1);
 
         textCompletedExerciseName.setText(_exercise_name);
-        textPulseBPM.setText(_pulse_bpm);
+        textPulseBPM.setText(_pulse_bpm+" ударов/мин");
 
         return builder1.create();
     }
