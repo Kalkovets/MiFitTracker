@@ -144,7 +144,7 @@ public class CompletedExercitesData extends AppCompatActivity {
                                             double endExercise = (list5End.get(position));
                                             long endExerciseLong = (long)(endExercise);
 
-                                            System.out.println("FUCK CANT "+endExerciseLong);
+                                            System.out.println("END TIME "+endExerciseLong);
 
                                             String pulse_bpm = "90 ударов/мин";
 

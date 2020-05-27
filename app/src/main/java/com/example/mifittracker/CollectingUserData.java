@@ -42,14 +42,18 @@ public class CollectingUserData extends AppCompatActivity implements DatePickerD
         FirebaseApp.initializeApp(this);
 
         FirebaseFirestore databaseFirebase = FirebaseFirestore.getInstance();
-        databaseFirebase.collection("cities")
-                .whereEqualTo("capital", true)
+        databaseFirebase.collection("User_Data")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                System.out.println("ID_USER_ID_USER "+ID_User+" getID "+document.getId());
+                                if (document.getId().equals(ID_User)){
+                                    Intent intentToMainMenu = new Intent(getApplicationContext(), Main_Menu.class);
+                                    startActivity(intentToMainMenu);
+                                }
                                 Log.d("Checking data ", document.getId() + " => " + document.getData());
                             }
                         } else {

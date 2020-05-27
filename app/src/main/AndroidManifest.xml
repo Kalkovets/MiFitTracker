@@ -18,23 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Main_Menu">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
         </activity>
         <activity android:name=".Training_Page"></activity>
         <activity android:name=".CompletedExercitesData">
+
+        </activity>
+        <activity android:name=".MyFitness" />
+        <activity android:name=".CollectingUserData" >
+
+        </activity>
+        <activity android:name=".Registration">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MyFitness" />
-        <activity android:name=".CollectingUserData" />
-        <activity android:name=".Registration"></activity>
         <activity android:name=".MainActivity" />
     </application>
 
